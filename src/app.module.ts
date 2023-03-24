@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
-import { AuthModule } from './auth/auth.module';
 
 const defaultOptions: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -22,7 +21,6 @@ const defaultOptions: TypeOrmModuleOptions = {
       ...defaultOptions,
     }),
     UsersModule,
-    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
