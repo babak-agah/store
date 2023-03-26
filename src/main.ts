@@ -5,7 +5,7 @@ import {
 } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-
+import * as morgan from 'morgan';
 import secureSession from '@fastify/secure-session';
 
 async function bootstrap() {
@@ -17,6 +17,7 @@ async function bootstrap() {
   // app.use(cookieSession({ keys: ['askdfjsldkfaj'] }));
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.use(morgan('dev'));
 
   await app.register(secureSession, {
     secret: 'averylogphrasebiggerthanthirtytwochars',
@@ -28,6 +29,6 @@ async function bootstrap() {
   });
 
   await app.listen(3000);
-  console.log(`Application is running on: ${await app.getUrl()}`);
 }
+
 bootstrap();

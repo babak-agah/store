@@ -22,6 +22,8 @@ import { AuthService } from './auth.service';
 import { CurrentUser } from './decorator/current-user.decorator';
 import { User } from './user.entity';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { SigninUserDto } from './dtos/signin-user.dto';
+import { SessionType } from 'src/utils/interfaces/session.interface';
 
 enum Url {
   USERS = 'users',
@@ -29,20 +31,18 @@ enum Url {
 }
 
 @Controller()
-@Serialize(UserDto)
 export class UsersController {
   constructor(
     private usersService: UsersService,
     private authService: AuthService,
   ) {}
 
-  @UseGuards(AuthGuard)
   @Get(`${Url.USERS}/me`)
+  @UseGuards(AuthGuard)
+  @Serialize(UserDto)
   async GetMe(@Session() session: any, @CurrentUser() user: User) {
-    if (!session.userId) {
-      throw new UnauthorizedException();
-    }
-    return user;
+    const u = await this.usersService.findOne({ _id: session.userId });
+    return u;
   }
 
   @Get(`${Url.USERS}/:id`)
@@ -50,18 +50,24 @@ export class UsersController {
     @Res({ passthrough: true }) res: FastifyReply,
     @Param('id') id: string,
   ) {
-    const user = await this.usersService.findOne({ id: parseInt(id) });
+    const user = await this.usersService.findOne(
+      {
+        _id: id,
+      },
+      { password: false },
+    );
     res.status(200);
     return user;
   }
 
+  @UseGuards(AuthGuard)
   @Patch(`${Url.USERS}/:id`)
   async updateUser(
     @Res() res: FastifyReply,
     @Body() body: UpdateUserDto,
     @Param('id') id: string,
   ) {
-    const user = await this.usersService.update(parseInt(id), body);
+    const user = await this.usersService.update(id, body);
     if (user) {
       res.status(200).send(user);
     } else {
@@ -69,9 +75,10 @@ export class UsersController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Delete(`${Url.USERS}/:id`)
   async deleteUser(@Res() res: FastifyReply, @Param('id') id: string) {
-    await this.usersService.remove(parseInt(id));
+    await this.usersService.remove(id);
     return res.status(200).send();
   }
 
@@ -79,16 +86,15 @@ export class UsersController {
   async CreateUser(
     @Res({ passthrough: true }) res,
     @Body() body: CreateUserDto,
-    @Session() session: any,
+    @Session() session: SessionType,
   ) {
     const user = await this.authService.signup(body);
     session.set('userId', user.id);
-
     return user;
   }
 
   @Post(`${Url.AUTH}/signin`)
-  async signin(@Body() body: CreateUserDto, @Session() session: any) {
+  async signin(@Body() body: SigninUserDto, @Session() session: SessionType) {
     const user = await this.authService.signin(body);
     session.userId = user.id;
     return user;

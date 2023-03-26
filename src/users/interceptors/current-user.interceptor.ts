@@ -13,8 +13,8 @@ export class CurrentUserInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
     const { userId } = request.session;
     if (userId) {
-      const user = await this.usersService.findOne({ id: userId });
-      request.currentUser = user;
+      // const user = await this.usersService.findOne({ _id: userId });
+      request.userId = userId;
     }
     return next.handle();
   }

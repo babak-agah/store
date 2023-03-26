@@ -1,65 +1,80 @@
+import { Projection } from './../utils/adapter';
+import { InjectModel } from '@nestjs/mongoose';
 import {
   Injectable,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { FindUserPublic, User, UserInstace } from './user.entity';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private repo: Repository<User>) {}
+  constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
-  async create(data: CreateUserDto) {
+  async create(data: CreateUserDto): Promise<FindUserPublic> {
+    const newData = { ...data, role: 'USER' };
+
     try {
-      const user = this.repo.create(data);
-      await this.repo.save(user);
+      const user = new this.userModel(newData);
+
+      const storedUser = await user.save();
+      return {
+        _id: storedUser.id,
+        name: storedUser.name,
+        email: storedUser.email,
+      };
     } catch (error) {
       throw new NotFoundException(`your email is not valid`);
     }
   }
 
-  async findOne({
-    id,
-    email,
-    throwError = true,
-  }: {
-    id?: number;
-    email?: string;
-    throwError?: boolean;
-  }) {
+  async findOne(
+    {
+      _id,
+      email,
+      throwError = true,
+    }: {
+      _id?: string;
+      email?: string;
+      throwError?: boolean;
+    },
+    projection?: Projection<UserInstace>,
+  ) {
     let user: User;
-    if (!id && !email) throw new BadRequestException();
+    if (!_id && !email) throw new BadRequestException();
+    let condition = {};
 
-    if (id) {
-      user = await this.repo.findOneBy({ id });
+    if (_id) {
+      condition = { _id };
     } else if (email) {
-      user = await this.repo.findOneBy({ email });
+      condition = { email };
     }
+
+    user = await this.userModel
+      .findOne(condition, { ...projection, __v: false })
+      .exec();
 
     if (user) return user;
     if (throwError)
       throw new NotFoundException(
-        `user with this ${id ? 'id' : 'email'}: ${id || email} not found`,
+        `user with this ${_id ? 'id' : 'email'}: ${_id || email} not found`,
       );
   }
 
-  find(email: string) {
-    return this.repo.findBy({ email });
-  }
+  // find(email: string) {
+  //   return this.repo.findBy({ email });
+  // }
 
-  async update(id: number, attrs: Partial<User>) {
-    const user = await this.findOne({ id });
-    Object.assign(user, attrs);
-    await this.repo.save(user);
+  async update(id: string, attrs: Partial<User>) {
+    const user = await this.userModel.updateOne({ id }, { attrs });
     return user;
   }
 
-  async remove(id: number) {
-    const user = await this.findOne({ id });
-    return this.repo.remove(user);
+  async remove(id: string) {
+    const user = await this.findOne({ _id: id });
+    // return this.repo.remove(user);
   }
 }
 

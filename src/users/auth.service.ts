@@ -1,3 +1,4 @@
+import { SigninUserDto } from './dtos/signin-user.dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
@@ -10,7 +11,7 @@ const scrypt = promisify(_scrypt);
 export class AuthService {
   constructor(private usersService: UsersService) {}
 
-  async signup({ email, password }: CreateUserDto) {
+  async signup({ email, password, name }: CreateUserDto) {
     // See if email is in use
     const find = await this.usersService.findOne({ email, throwError: false });
     if (find) throw new BadRequestException(`email in use`);
@@ -27,6 +28,7 @@ export class AuthService {
 
     // Create a new user nad save it
     await this.usersService.create({
+      name,
       email,
       password: result,
     });
@@ -38,7 +40,7 @@ export class AuthService {
     return user;
   }
 
-  async signin({ email, password }: CreateUserDto) {
+  async signin({ email, password }: SigninUserDto) {
     const user = await this.usersService.findOne({ email });
 
     const [salt, storedHash] = user.password.split('.');
@@ -47,6 +49,8 @@ export class AuthService {
 
     if (storedHash !== hash.toString('hex'))
       throw new BadRequestException('bad password');
+
+    user.password = undefined;
 
     return user;
   }

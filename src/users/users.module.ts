@@ -1,14 +1,14 @@
 import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { User } from './user.entity';
+import { UserSchema } from './user.entity';
 import { AuthService } from './auth.service';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])],
   controllers: [UsersController],
   providers: [
     UsersService,
