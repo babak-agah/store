@@ -1,40 +1,27 @@
 import { Schema } from 'mongoose';
 
-export const ProductSchema = new Schema({
-  name: { type: String, required: true },
-  description: { type: String, required: true },
-  price: { type: Number, required: true },
-  userId: {
-    required: true,
-    type: Schema.Types.ObjectId,
-    ref: 'User',
+export const ProductSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    categoryId: { type: Schema.Types.ObjectId, ref: 'Category' },
+    description: { type: String, required: true },
+    creator: {
+      required: true,
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
   },
-});
-
-// Duplicate the ID field.
-ProductSchema.virtual('id').get(function () {
-  return this._id.toHexString();
-});
+  { timestamps: true },
+);
 
 // Ensure virtual fields are serialised.
-ProductSchema.set('toJSON', {
-  virtuals: true,
-});
+// ProductSchema.set('toJSON', {
+//   virtuals: true,
+// });
 
 ProductSchema.method('toJSON', function () {
-  const { __v, _id, ...object } = this.toObject();
-  object.id = _id;
+  const { __v, createdAt, updatedAt, ...object } = this.toObject();
   return object;
-});
-
-ProductSchema.method('toClient', function () {
-  var obj = this.toObject();
-
-  //Rename fields
-  obj.id = obj._id;
-  delete obj._id;
-
-  return obj;
 });
 
 export interface ProductInstace {

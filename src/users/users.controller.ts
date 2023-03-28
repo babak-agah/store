@@ -3,14 +3,12 @@ import { UsersService } from './users.service';
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   Patch,
   Post,
   Res,
   Session,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 
@@ -41,7 +39,7 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Serialize(UserDto)
   async GetMe(@Session() session: any, @CurrentUser() user: User) {
-    const u = await this.usersService.findOne({ _id: session.userId });
+    const u = await this.usersService.findOne([{ _id: session.userId }]);
     return u;
   }
 
@@ -50,12 +48,14 @@ export class UsersController {
     @Res({ passthrough: true }) res: FastifyReply,
     @Param('id') id: string,
   ) {
-    const user = await this.usersService.findOne(
+    const condition = [
       {
         _id: id,
       },
-      { password: false },
-    );
+    ];
+    const user = await this.usersService.findOne(condition, {
+      password: false,
+    });
     res.status(200);
     return user;
   }
@@ -75,12 +75,12 @@ export class UsersController {
     }
   }
 
-  @UseGuards(AuthGuard)
-  @Delete(`${Url.USERS}/:id`)
-  async deleteUser(@Res() res: FastifyReply, @Param('id') id: string) {
-    await this.usersService.remove(id);
-    return res.status(200).send();
-  }
+  // @UseGuards(AuthGuard)
+  // @Delete(`${Url.USERS}/:id`)
+  // async deleteUser(@Res() res: FastifyReply, @Param('id') id: string) {
+  //   await this.usersService.remove(id);
+  //   return res.status(200).send();
+  // }
 
   @Post(`${Url.AUTH}/signup`)
   async CreateUser(
@@ -89,7 +89,7 @@ export class UsersController {
     @Session() session: SessionType,
   ) {
     const user = await this.authService.signup(body);
-    session.set('userId', user.id);
+    if (user) session.set('userId', user.id);
     return user;
   }
 

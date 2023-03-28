@@ -1,9 +1,12 @@
+import { FilterQuery } from 'mongoose';
+
 import { SigninUserDto } from './dtos/signin-user.dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { User } from './user.entity';
 
 const scrypt = promisify(_scrypt);
 
@@ -11,10 +14,17 @@ const scrypt = promisify(_scrypt);
 export class AuthService {
   constructor(private usersService: UsersService) {}
 
-  async signup({ email, password, name }: CreateUserDto) {
+  async signup({ username, mobile, password }: CreateUserDto) {
     // See if email is in use
-    const find = await this.usersService.findOne({ email, throwError: false });
-    if (find) throw new BadRequestException(`email in use`);
+
+    const find = await this.usersService.findOne([{ mobile }, { username }], {
+      mobile: true,
+      username: true,
+    });
+    if (find?.username === username)
+      throw new BadRequestException(`username is not valid`);
+    if (find?.mobile === mobile)
+      throw new BadRequestException(`mobile is not valid`);
 
     // Hash the users password
     // Generate a salt
@@ -27,21 +37,22 @@ export class AuthService {
     const result = salt + '.' + hash.toString('hex');
 
     // Create a new user nad save it
-    await this.usersService.create({
-      name,
-      email,
+    const user = await this.usersService.create({
+      username,
+      mobile,
       password: result,
     });
 
-    // get the user from db
-    const user = await this.usersService.findOne({ email });
-
-    // return the user
     return user;
   }
 
-  async signin({ email, password }: SigninUserDto) {
-    const user = await this.usersService.findOne({ email });
+  async signin({ username, password }: SigninUserDto) {
+    const user = await this.usersService.findOne([
+      { username },
+      { mobile: username },
+      { email: username },
+    ]);
+    if (!user) throw new BadRequestException('bad password');
 
     const [salt, storedHash] = user.password.split('.');
 

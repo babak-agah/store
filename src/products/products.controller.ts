@@ -6,6 +6,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Session,
@@ -54,7 +55,7 @@ export class ProductsController {
     return this.productsService.deleteProduct(filter);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @UseGuards(AuthGuard)
   async updateProduct(
     @Session() session: SessionType,

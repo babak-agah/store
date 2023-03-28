@@ -30,4 +30,4 @@ const t: Record1<ProductModel, { id: string }> = {
   _id: 'id',
 };
 
-export type Projection<T> = Partial<{ [key in keyof T]: false }>;
+export type Projection<T> = Partial<{ [key in keyof T]: boolean }>;
