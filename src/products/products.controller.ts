@@ -8,7 +8,6 @@ import {
   Param,
   Patch,
   Post,
-  Put,
   Session,
   UseGuards,
 } from '@nestjs/common';

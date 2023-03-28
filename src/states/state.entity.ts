@@ -1,5 +1,9 @@
 import { Schema } from 'mongoose';
-import { CitySchema } from 'src/cities/city.entity';
+
+export const CitySchema = new Schema({
+  name: { type: String, required: true, unique: true, index: 1 },
+  coordinate: { type: [Number], required: true, length: 2 },
+});
 
 export const StatesSchema = new Schema({
   name: { type: String, required: true, unique: true, index: 1 },
@@ -11,10 +15,14 @@ StatesSchema.method('toJSON', function () {
   return object;
 });
 
+export interface CityInstace {
+  name: string;
+  coordinate: [number, number];
+}
 export interface StateInstace {
   _id: string;
   name: string;
-  cities: [{ CityInstace }];
+  cities: CityInstace[];
 }
 
 export type State = StateInstace & Document;
