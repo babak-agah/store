@@ -1,4 +1,4 @@
-import { UpdatePorductDto } from './dtos/update-product.dto copy';
+import { UpdatePorductDto } from './dtos/update-product.dto';
 import { CreatePorductDto } from './dtos/create-product.dto';
 import {
   Body,
@@ -16,6 +16,7 @@ import { AuthGuard } from 'src/guards/auth.guard';
 import { FilterQuery } from 'mongoose';
 import { Product } from './product.entity';
 import { SessionType } from 'src/utils/interfaces/session.interface';
+import { CreateProductItemDto } from './dtos/create-product-item.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -23,7 +24,7 @@ export class ProductsController {
 
   @Post()
   async createProduct(@Session() session, @Body() body: CreatePorductDto) {
-    const product = await this.productsService.insertProduct(
+    const product = await this.productsService.createProduct(
       body,
       session.userId,
     );
@@ -68,6 +69,26 @@ export class ProductsController {
 
     const result = await this.productsService.updateProduct(filter, body);
 
+    return result;
+  }
+
+  @Post(':id')
+  @UseGuards(AuthGuard)
+  async addProductItem(
+    @Param('id') id: string,
+    @Body() data: CreateProductItemDto,
+  ) {
+    const result = await this.productsService.createProductItem(id, data);
+    return result;
+  }
+
+  @Patch('product-items/:id')
+  @UseGuards(AuthGuard)
+  async updateProductItem(
+    @Param('id') id: string,
+    @Body() data: CreateProductItemDto,
+  ) {
+    const result = await this.productsService.updateProductItem(id, data);
     return result;
   }
 }

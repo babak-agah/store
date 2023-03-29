@@ -12,16 +12,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { Serialize } from 'src/interceptors/serialize.interceptor';
-import { UserDto } from './dtos/user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorator/current-user.decorator';
 import { User } from './user.entity';
-import { AuthGuard } from 'src/guards/auth.guard';
+
 import { SigninUserDto } from './dtos/signin-user.dto';
 import { SessionType } from 'src/utils/interfaces/session.interface';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 enum Url {
   USERS = 'users',
@@ -37,7 +36,7 @@ export class UsersController {
 
   @Get(`${Url.USERS}/me`)
   @UseGuards(AuthGuard)
-  @Serialize(UserDto)
+  // @Serialize(UserDto)
   async GetMe(@Session() session: any, @CurrentUser() user: User) {
     const u = await this.usersService.findOne([{ _id: session.userId }]);
     return u;
@@ -48,14 +47,7 @@ export class UsersController {
     @Res({ passthrough: true }) res: FastifyReply,
     @Param('id') id: string,
   ) {
-    const condition = [
-      {
-        _id: id,
-      },
-    ];
-    const user = await this.usersService.findOne(condition, {
-      password: false,
-    });
+    const user = await this.usersService.findOne({ _id: id });
     res.status(200);
     return user;
   }

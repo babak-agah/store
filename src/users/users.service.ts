@@ -30,15 +30,13 @@ export class UsersService {
     }
   }
 
-  async findOne(
-    condition: { [key in 'email' | 'mobile' | 'username' | '_id']?: string }[],
-    projection?: Projection<UserInstace>,
-  ) {
+  async findOne(filter: FilterQuery<User>, select?: string) {
     let user: User;
-
-    user = await this.userModel
-      .findOne({ $or: condition }, { ...projection })
-      .exec();
+    let query = this.userModel.findOne(filter);
+    if (select) {
+      query.select(select);
+    }
+    user = await query;
 
     if (user) return user;
     return null;

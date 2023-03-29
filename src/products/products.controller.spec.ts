@@ -13,6 +13,7 @@ describe('ProductsController', () => {
   });
 
   it('should be defined', () => {
+    console.log('hello');
     expect(controller).toBeDefined();
   });
 });

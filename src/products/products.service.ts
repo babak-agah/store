@@ -1,10 +1,12 @@
-import { UpdatePorductDto } from './dtos/update-product.dto copy';
+import { UpdatePorductDto } from './dtos/update-product.dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Product, ProductInstace } from './product.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { CreatePorductDto } from './dtos/create-product.dto';
 import { Projection } from 'src/utils/adapter';
+import { errorHandlers } from 'src/utils/error-handler';
+import { CreateProductItemDto } from './dtos/create-product-item.dto';
 
 @Injectable()
 export class ProductsService {
@@ -12,12 +14,14 @@ export class ProductsService {
     @InjectModel('Product') private readonly productModel: Model<Product>,
   ) {}
 
-  async insertProduct(product: CreatePorductDto, userId: string) {
+  async createProduct(product: CreatePorductDto, userId: string) {
     const newProduct = new this.productModel({ ...product, userId });
-
-    const result = await newProduct.save();
-
-    return result as Product;
+    try {
+      const result = await newProduct.save();
+      return result as Product;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
   async getProductById(_id: string, projection?: Projection<ProductInstace>) {
@@ -45,20 +49,87 @@ export class ProductsService {
   }
 
   async updateProduct(filter: FilterQuery<Product>, data: UpdatePorductDto) {
-    const product = await this.productModel.findOneAndUpdate(
-      filter,
-      {
-        $set: data,
-      },
-      {
-        new: true,
-        runValidators: true,
-        projection: {},
-      },
-    );
+    try {
+      const product = await this.productModel
+        .findOneAndUpdate(
+          filter,
+          {
+            $set: data,
+          },
+          {
+            new: true,
+            runValidators: true,
+            projection: {},
+          },
+        )
+        .catch((error) => {
+          errorHandlers(error);
+        });
 
-    if (!product) throw new BadRequestException();
+      if (!product) throw new BadRequestException();
 
-    return product;
+      return product;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async createProductItem(_id: string, data: CreateProductItemDto) {
+    try {
+      const result = await this.productModel
+        .findOneAndUpdate(
+          {
+            _id,
+            'productItems.sku': { $ne: data.sku },
+          },
+          {
+            $addToSet: { productItems: data },
+          },
+          {
+            new: true,
+            runValidators: true,
+          },
+        )
+        .catch(errorHandlers);
+
+      if (!result)
+        throw new BadRequestException('productId or sku is not valid');
+
+      return result;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async updateProductItem(_id: string, data: CreateProductItemDto) {
+    try {
+      const result = await this.productModel
+        .findOneAndUpdate(
+          {
+            _id,
+            productItems: { $elemMatch: { sku: data.sku } },
+          },
+          {
+            $set: {
+              'productItems.$': data,
+            },
+          },
+          {
+            multi: false,
+            new: true,
+            runValidators: true,
+          },
+        )
+        .catch(errorHandlers);
+
+      console.log(result);
+
+      if (!result)
+        throw new BadRequestException('productId or sku is not valid');
+
+      return result;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 }

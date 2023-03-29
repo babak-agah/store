@@ -1,8 +1,13 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Model } from 'mongoose';
-import { CreateProductCategoriesDto } from './dtos/create-product-categoies.dto';
+import { UpdateProductCategoriesDto } from './dtos/update-product-categoies.dto';
 import { ProductCategory } from './product-category.entity';
+import { CreateProductCategoriesDto } from './dtos/create-product-categoies.dto copy';
 
 @Injectable()
 export class ProductCategoriesService {
@@ -22,12 +27,39 @@ export class ProductCategoriesService {
   }
 
   async create(data: CreateProductCategoriesDto) {
-    const productCategory = new this.productCategoryModel(data);
-    await productCategory.save();
-    return productCategory;
+    try {
+      const productCategory = new this.productCategoryModel(data);
+      await productCategory.save().catch((error) => {
+        if (error.code === 11000) {
+          throw new BadRequestException('name is duplicated');
+        }
+
+        throw new InternalServerErrorException();
+      });
+
+      return productCategory;
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 
-  update() {}
+  async update(id: string, data: UpdateProductCategoriesDto) {
+    const newData = { ...data };
+
+    try {
+      const result = await this.productCategoryModel.findByIdAndUpdate(
+        id,
+        {
+          $set: { ...newData },
+        },
+        { new: true, runValidators: true },
+      );
+
+      return result;
+    } catch (error) {
+      throw new BadRequestException();
+    }
+  }
 
   delete() {}
 }

@@ -1,17 +1,19 @@
 import { Schema } from 'mongoose';
 
-export const VariantionOption = new Schema({
-  value: Schema.Types.Mixed,
-});
-
 export const VariationSchema = new Schema({
   name: { type: String, required: true },
-  options: { type: [VariantionOption], required: true },
+  options: [Schema.Types.Mixed],
 });
 
 export const ProductCategorySchema = new Schema({
-  name: { type: String, required: true, unique: true },
-  children: [{ type: Schema.Types.ObjectId, ref: 'ProductCategory' }],
+  name: {
+    type: String,
+    required: [true, 'name is required'],
+    unique: true,
+    index: true,
+  },
+  ancestors: [{ type: Schema.Types.ObjectId, ref: 'ProductCategory' }],
+  parent: { type: Schema.Types.ObjectId, ref: 'ProductCategory' },
   variations: { type: [VariationSchema] },
 });
 
@@ -20,20 +22,17 @@ ProductCategorySchema.method('toJSON', function () {
   return object;
 });
 
-export interface VariantionOption {
-  _id: string;
-  value: any;
-}
-
 export interface Variation {
   _id: string;
   name: string;
-  options: VariantionOption[];
+  options: any[];
 }
 
 export interface ProductCategoryInstace {
   _id: string;
   name: string;
+  parent?: string;
+  ancestors: string[];
   variants: Variation[];
 }
 

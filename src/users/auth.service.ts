@@ -17,9 +17,8 @@ export class AuthService {
   async signup({ username, mobile, password }: CreateUserDto) {
     // See if email is in use
 
-    const find = await this.usersService.findOne([{ mobile }, { username }], {
-      mobile: true,
-      username: true,
+    const find = await this.usersService.findOne({
+      $or: [{ mobile }, { username }],
     });
     if (find?.username === username)
       throw new BadRequestException(`username is not valid`);
@@ -47,11 +46,11 @@ export class AuthService {
   }
 
   async signin({ username, password }: SigninUserDto) {
-    const user = await this.usersService.findOne([
-      { username },
-      { mobile: username },
-      { email: username },
-    ]);
+    const user = await this.usersService.findOne(
+      { $or: [{ username }, { mobile: username }, { email: username }] },
+      '+password',
+    );
+
     if (!user) throw new BadRequestException('bad password');
 
     const [salt, storedHash] = user.password.split('.');

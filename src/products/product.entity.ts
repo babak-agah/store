@@ -1,28 +1,41 @@
 import { Schema } from 'mongoose';
-import { VariantionOption } from 'src/product-categories/product-category.entity';
 
 export const ProductItemSchema = new Schema({
   name: { type: String },
-  prodcutId: { type: Schema.Types.ObjectId, ref: 'Product' },
-  SKU: { type: String, required: true },
-  qtyInStock: { type: Number, required: true },
+  sku: {
+    type: String,
+    required: true,
+    unique: true,
+    sparse: true,
+    index: 1,
+  },
+  qty: { type: Number, required: true },
   images: [String],
   price: { type: Number, required: true },
-  configurations: [VariantionOption],
+  configurations: [
+    {
+      name: String,
+      value: Schema.Types.Mixed,
+    },
+  ],
 });
 
 export const ProductSchema = new Schema(
   {
     name: { type: String, required: true },
-    categoryId: { type: Schema.Types.ObjectId, ref: 'ProductCategory' },
-    description: { type: String, required: true },
+    categoryId: {
+      type: Schema.Types.ObjectId,
+      ref: 'ProductCategory',
+      required: [true, 'categoryId is required.'],
+    },
+    description: { type: String },
     images: String,
     userId: {
       required: true,
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    productItems: { type: [ProductItemSchema], required: true },
+    productItems: [ProductItemSchema],
   },
   { timestamps: true },
 );

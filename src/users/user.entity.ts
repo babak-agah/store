@@ -25,7 +25,7 @@ export const UserSchema = new Schema(
       sparse: true,
     },
     mobile: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String, required: true, select: false },
     role: { type: String, required: true, enum: ['ADMIN', 'USER'] },
     addresses: [AddressSchema],
   },
