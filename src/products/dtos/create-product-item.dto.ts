@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
@@ -8,21 +9,26 @@ import {
 } from 'class-validator';
 
 export class CreateProductItemDto {
+  @ApiProperty()
   @IsString()
   @IsOptional()
   name: string;
 
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
-    sku: string;
+  sku: string;
 
+  @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
   qty: number;
 
+  @ApiProperty()
   @Type(() => String)
   images: string[];
 
+  @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
   price: number;
@@ -33,10 +39,12 @@ export class CreateProductItemDto {
 }
 
 class ConfigurationDto {
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   name: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   value: string;
 }

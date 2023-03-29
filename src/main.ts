@@ -7,6 +7,14 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as morgan from 'morgan';
 import secureSession from '@fastify/secure-session';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
+const config = new DocumentBuilder()
+  .setTitle('Store')
+  .setDescription(':)')
+  .setVersion('1.0')
+  .addTag('')
+  .build();
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -27,6 +35,9 @@ async function bootstrap() {
       // options for setCookie, see https://github.com/fastify/fastify-cookie
     },
   });
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(3000);
 }

@@ -1,3 +1,4 @@
+import { ApiTags } from '@nestjs/swagger';
 import { FastifyReply } from 'fastify';
 import { UsersService } from './users.service';
 import {
@@ -34,6 +35,8 @@ export class UsersController {
     private authService: AuthService,
   ) {}
 
+
+  @ApiTags('users')
   @Get(`${Url.USERS}/me`)
   @UseGuards(AuthGuard)
   // @Serialize(UserDto)
@@ -42,6 +45,7 @@ export class UsersController {
     return u;
   }
 
+  @ApiTags('users')
   @Get(`${Url.USERS}/:id`)
   async getUserById(
     @Res({ passthrough: true }) res: FastifyReply,
@@ -52,6 +56,7 @@ export class UsersController {
     return user;
   }
 
+  @ApiTags('users')
   @UseGuards(AuthGuard)
   @Patch(`${Url.USERS}/:id`)
   async updateUser(
@@ -74,6 +79,7 @@ export class UsersController {
   //   return res.status(200).send();
   // }
 
+  @ApiTags('auth')
   @Post(`${Url.AUTH}/signup`)
   async CreateUser(
     @Res({ passthrough: true }) res,
@@ -85,6 +91,8 @@ export class UsersController {
     return user;
   }
 
+
+  @ApiTags('auth')
   @Post(`${Url.AUTH}/signin`)
   async signin(@Body() body: SigninUserDto, @Session() session: SessionType) {
     const user = await this.authService.signin(body);

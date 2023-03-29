@@ -17,11 +17,14 @@ import { FilterQuery } from 'mongoose';
 import { Product } from './product.entity';
 import { SessionType } from 'src/utils/interfaces/session.interface';
 import { CreateProductItemDto } from './dtos/create-product-item.dto';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('products')
 @Controller('products')
 export class ProductsController {
   constructor(private productsService: ProductsService) {}
 
+  @ApiBody({ type: [CreatePorductDto] })
   @Post()
   async createProduct(@Session() session, @Body() body: CreatePorductDto) {
     const product = await this.productsService.createProduct(
@@ -72,6 +75,7 @@ export class ProductsController {
     return result;
   }
 
+  @ApiBody({ type: [CreateProductItemDto] })
   @Post(':id')
   @UseGuards(AuthGuard)
   async addProductItem(
@@ -82,6 +86,7 @@ export class ProductsController {
     return result;
   }
 
+  @ApiBody({ type: [CreateProductItemDto] })
   @Patch('product-items/:id')
   @UseGuards(AuthGuard)
   async updateProductItem(
