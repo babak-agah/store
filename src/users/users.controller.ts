@@ -7,7 +7,6 @@ import {
   Get,
   Param,
   Patch,
-  Post,
   Res,
   Session,
   UseGuards,
@@ -18,26 +17,16 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorator/current-user.decorator';
 import { User } from './user.entity';
-
-import { SigninUserDto } from './dtos/signin-user.dto';
-import { SessionType } from 'src/utils/interfaces/session.interface';
 import { AuthGuard } from 'src/guards/auth.guard';
-
-enum Url {
-  USERS = 'users',
-  AUTH = 'auth',
-}
-
-@Controller()
+@ApiTags('users')
+@Controller('users')
 export class UsersController {
   constructor(
     private usersService: UsersService,
     private authService: AuthService,
   ) {}
 
-
-  @ApiTags('users')
-  @Get(`${Url.USERS}/me`)
+  @Get('me')
   @UseGuards(AuthGuard)
   // @Serialize(UserDto)
   async GetMe(@Session() session: any, @CurrentUser() user: User) {
@@ -45,8 +34,7 @@ export class UsersController {
     return u;
   }
 
-  @ApiTags('users')
-  @Get(`${Url.USERS}/:id`)
+  @Get(`:id`)
   async getUserById(
     @Res({ passthrough: true }) res: FastifyReply,
     @Param('id') id: string,
@@ -56,9 +44,18 @@ export class UsersController {
     return user;
   }
 
-  @ApiTags('users')
+  @Get()
+  async getUsers(
+    @Res({ passthrough: true }) res: FastifyReply,
+    @Param('id') id: string,
+  ) {
+    const user = await this.usersService.find();
+    res.status(200);
+    return user;
+  }
+
   @UseGuards(AuthGuard)
-  @Patch(`${Url.USERS}/:id`)
+  @Patch(`:id`)
   async updateUser(
     @Res() res: FastifyReply,
     @Body() body: UpdateUserDto,
@@ -79,24 +76,23 @@ export class UsersController {
   //   return res.status(200).send();
   // }
 
-  @ApiTags('auth')
-  @Post(`${Url.AUTH}/signup`)
-  async CreateUser(
-    @Res({ passthrough: true }) res,
-    @Body() body: CreateUserDto,
-    @Session() session: SessionType,
-  ) {
-    const user = await this.authService.signup(body);
-    if (user) session.set('userId', user.id);
-    return user;
-  }
+  // @ApiTags('auth')
+  // @Post(`${Url.AUTH}/signup`)
+  // async CreateUser(
+  //   @Res({ passthrough: true }) res,
+  //   @Body() body: CreateUserDto,
+  //   @Session() session: SessionType,
+  // ) {
+  //   const user = await this.authService.signup(body);
+  //   if (user) session.set('userId', user.id);
+  //   return user;
+  // }
 
-
-  @ApiTags('auth')
-  @Post(`${Url.AUTH}/signin`)
-  async signin(@Body() body: SigninUserDto, @Session() session: SessionType) {
-    const user = await this.authService.signin(body);
-    session.userId = user.id;
-    return user;
-  }
+  // @ApiTags('auth')
+  // @Post(`${Url.AUTH}/signin`)
+  // async signin(@Body() body: SigninUserDto, @Session() session: SessionType) {
+  //   const user = await this.authService.signin(body);
+  //   session.userId = user.id;
+  //   return user;
+  // }
 }

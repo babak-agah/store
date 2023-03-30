@@ -1,5 +1,10 @@
 import { UpdatePorductDto } from './dtos/update-product.dto';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Product, ProductInstace } from './product.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
@@ -66,11 +71,9 @@ export class ProductsService {
           errorHandlers(error);
         });
 
-      if (!product) throw new BadRequestException();
-
       return product;
     } catch (error) {
-      throw new BadRequestException(error);
+      throw new BadRequestException('product not found');
     }
   }
 

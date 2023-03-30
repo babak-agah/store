@@ -1,8 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, Length, IsOptional } from 'class-validator';
+import {
+  IsNumber,
+  IsString,
+  Length,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
+import { ConfigurationDto } from './configuration.dto';
+import { Type } from 'class-transformer';
 
 export class UpdatePorductDto {
-  @ApiProperty  ()
+  @ApiProperty()
   @IsOptional()
   @IsString()
   @Length(2)
@@ -17,4 +25,8 @@ export class UpdatePorductDto {
   @IsOptional()
   @IsNumber()
   price?: number;
+
+  @ValidateNested({ each: true })
+  @Type(() => ConfigurationDto)
+  configurations: ConfigurationDto[];
 }

@@ -42,7 +42,7 @@ export class UsersService {
     return null;
   }
 
-  find(condition: FilterQuery<User>) {
+  find(condition?: FilterQuery<User>) {
     return this.userModel.find(condition);
   }
 

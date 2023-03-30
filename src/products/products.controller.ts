@@ -66,6 +66,7 @@ export class ProductsController {
     @Body() body: UpdatePorductDto,
   ) {
     let filter: FilterQuery<Product> = { _id: id };
+
     if (!session.admin) {
       filter = { ...filter, userId: session.userId };
     }

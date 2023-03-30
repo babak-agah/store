@@ -1,6 +1,11 @@
 import { Schema } from 'mongoose';
 
-export const ProductItemSchema = new Schema({
+const Configuration = {
+  name: String,
+  value: Schema.Types.Mixed,
+};
+
+export const ProductItemSchema = {
   name: { type: String },
   sku: {
     type: String,
@@ -9,16 +14,11 @@ export const ProductItemSchema = new Schema({
     sparse: true,
     index: 1,
   },
-  qty: { type: Number, required: true },
+  qtyInStock: { type: Number, required: true },
   images: [String],
   price: { type: Number, required: true },
-  configurations: [
-    {
-      name: String,
-      value: Schema.Types.Mixed,
-    },
-  ],
-});
+  configurations: [Configuration],
+};
 
 export const ProductSchema = new Schema(
   {
@@ -35,6 +35,7 @@ export const ProductSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
+    configurations: [Configuration],
     productItems: [ProductItemSchema],
   },
   { timestamps: true },

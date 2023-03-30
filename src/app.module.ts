@@ -8,6 +8,7 @@ import { ProductsModule } from './products/products.module';
 import { StatesModule } from './states/states.module';
 import { ProductCategoriesModule } from './product-categories/product-categories.module';
 import { ProductItemsModule } from './product-items/product-items.module';
+import { ShoppingCartsModule } from './shopping-carts/shopping-carts.module';
 
 const defaultOptions: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -30,6 +31,7 @@ const defaultOptions: TypeOrmModuleOptions = {
     StatesModule,
     ProductCategoriesModule,
     ProductItemsModule,
+    ShoppingCartsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

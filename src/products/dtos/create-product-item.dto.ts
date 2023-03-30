@@ -7,6 +7,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { ConfigurationDto } from './configuration.dto';
 
 export class CreateProductItemDto {
   @ApiProperty()
@@ -22,7 +23,7 @@ export class CreateProductItemDto {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  qty: number;
+  qtyInStock: number;
 
   @ApiProperty()
   @Type(() => String)
@@ -36,15 +37,4 @@ export class CreateProductItemDto {
   @ValidateNested({ each: true })
   @Type(() => ConfigurationDto)
   configurations: ConfigurationDto[];
-}
-
-class ConfigurationDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  value: string;
 }
