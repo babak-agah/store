@@ -125,8 +125,6 @@ export class ProductsService {
         )
         .catch(errorHandlers);
 
-      console.log(result);
-
       if (!result)
         throw new BadRequestException('productId or sku is not valid');
 
