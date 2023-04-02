@@ -1,10 +1,5 @@
 import { Schema } from 'mongoose';
 
-export const VariationSchema = new Schema({
-  name: { type: String, required: true },
-  options: [Schema.Types.Mixed],
-});
-
 export const ProductCategorySchema = new Schema({
   name: {
     type: String,
@@ -12,9 +7,8 @@ export const ProductCategorySchema = new Schema({
     unique: true,
     index: true,
   },
-  ancestors: [{ type: Schema.Types.ObjectId, ref: 'ProductCategory' }],
   parent: { type: Schema.Types.ObjectId, ref: 'ProductCategory' },
-  variations: { type: [VariationSchema] },
+  ancestors: [{ type: Schema.Types.ObjectId, ref: 'ProductCategory' }],
 });
 
 ProductCategorySchema.method('toJSON', function () {
@@ -33,7 +27,6 @@ export interface ProductCategoryInstace {
   name: string;
   parent?: string;
   ancestors: string[];
-  variants: Variation[];
 }
 
 export type ProductCategory = ProductCategoryInstace & Document;

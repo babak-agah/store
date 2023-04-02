@@ -1,12 +1,14 @@
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
+import { variationModels } from 'src/variations/variations.entity';
 
 export class VariationDto {
   @IsString()
@@ -16,6 +18,10 @@ export class VariationDto {
   @IsArray()
   @IsNotEmpty()
   options: any[];
+
+  @IsOptional()
+  @IsEnum(variationModels)
+  model: string;
 }
 
 export class UpdateProductCategoriesDto {

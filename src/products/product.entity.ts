@@ -2,7 +2,7 @@ import { Schema } from 'mongoose';
 
 const Configuration = {
   name: String,
-  value: Schema.Types.Mixed,
+  values: [Schema.Types.Mixed],
 };
 
 export const ProductItemSchema = {

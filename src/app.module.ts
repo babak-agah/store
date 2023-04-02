@@ -7,8 +7,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ProductsModule } from './products/products.module';
 import { StatesModule } from './states/states.module';
 import { ProductCategoriesModule } from './product-categories/product-categories.module';
-import { ProductItemsModule } from './product-items/product-items.module';
 import { ShoppingCartsModule } from './shopping-carts/shopping-carts.module';
+import { VariationsModule } from './variations/variations.module';
+import { UnitsModule } from './units/units.module';
 
 const defaultOptions: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -30,8 +31,9 @@ const defaultOptions: TypeOrmModuleOptions = {
     ProductsModule,
     StatesModule,
     ProductCategoriesModule,
-    ProductItemsModule,
     ShoppingCartsModule,
+    VariationsModule,
+    UnitsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

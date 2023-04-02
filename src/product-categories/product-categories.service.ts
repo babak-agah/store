@@ -57,7 +57,7 @@ export class ProductCategoriesService {
 
       return result;
     } catch (error) {
-      throw new BadRequestException();
+      throw new BadRequestException(error);
     }
   }
 

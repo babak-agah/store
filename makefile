@@ -8,4 +8,8 @@ keycloack:
 server: 
 	yarn start:dev
 
-.PHONEY: mongodb server keycloack
+
+module:
+	nest g module $(name) && nest g controller $(name) && nest g service $(name)
+
+.PHONEY: mongodb server keycloack module

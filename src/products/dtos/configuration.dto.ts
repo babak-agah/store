@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 export class ConfigurationDto {
   @ApiProperty()
   @IsString()
@@ -8,5 +8,6 @@ export class ConfigurationDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  value: string;
+  @IsArray()
+  values: any;
 }
