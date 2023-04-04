@@ -1,7 +1,14 @@
+import { variationModels } from './../variations/variations.entity';
 import { Schema } from 'mongoose';
 
 const Configuration = {
-  name: String,
+  variationId: { type: Schema.Types.ObjectId, ref: 'Variation' },
+  name: { type: String, required: true },
+  model: {
+    type: String,
+    enum: variationModels,
+  },
+  unit: String,
   values: [Schema.Types.Mixed],
 };
 
@@ -46,11 +53,26 @@ ProductSchema.method('toJSON', function () {
   return object;
 });
 
+export interface Configuration {
+  name: String;
+  values: [Schema.Types.Mixed];
+}
+
+export interface ProductItem {
+  name: string;
+  sku: string;
+  qtyInStock: number;
+  images: string[];
+  price: number;
+  configurations: Configuration[];
+}
 export interface ProductInstace {
   _id: string;
   name: string;
   description: string;
   price: number;
+  configurations: [];
+  productItems: ProductItem[];
 }
 
 export type Product = ProductInstace & Document;

@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsString, Min } from 'class-validator';
-export class AddProductToShoppingCartDto {
+import { IsNotEmpty, IsString, Min, IsNumber } from 'class-validator';
+export class UpdateProductInShoppingCartDto {
   @IsString()
   @IsNotEmpty()
   productId: string;
@@ -8,7 +8,7 @@ export class AddProductToShoppingCartDto {
   @IsNotEmpty()
   sku: string;
 
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
   @Min(0)
   qty: number;

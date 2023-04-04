@@ -10,6 +10,7 @@ import { ProductCategoriesModule } from './product-categories/product-categories
 import { ShoppingCartsModule } from './shopping-carts/shopping-carts.module';
 import { VariationsModule } from './variations/variations.module';
 import { UnitsModule } from './units/units.module';
+import { AuthModule } from './auth/auth.module';
 
 const defaultOptions: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -34,6 +35,7 @@ const defaultOptions: TypeOrmModuleOptions = {
     ShoppingCartsModule,
     VariationsModule,
     UnitsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

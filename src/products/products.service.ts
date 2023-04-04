@@ -34,7 +34,7 @@ export class ProductsService {
       .findById(_id, { ...projection })
       .exec();
     if (!product) throw new BadRequestException();
-    return product;
+    return product as ProductInstace;
   }
 
   async getProducts(

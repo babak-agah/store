@@ -1,12 +1,10 @@
-import { FilterQuery } from 'mongoose';
-
-import { SigninUserDto } from './dtos/signin-user.dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UsersService } from './users.service';
+
 import { randomBytes, scrypt as _scrypt } from 'crypto';
+import { CreateUserDto } from 'src/users/dtos/create-user.dto';
+import { SigninUserDto } from 'src/users/dtos/signin-user.dto';
+import { UsersService } from 'src/users/users.service';
 import { promisify } from 'util';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { User } from './user.entity';
 
 const scrypt = promisify(_scrypt);
 

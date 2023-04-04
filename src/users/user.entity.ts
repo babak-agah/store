@@ -2,7 +2,7 @@ import { Document } from 'mongoose';
 
 import { Schema } from 'mongoose';
 
-export const AddressSchema = new Schema({
+export const AddressSchema = {
   phoneNumber: [String],
   mobileNumber: [String],
   region: { type: String },
@@ -10,7 +10,19 @@ export const AddressSchema = new Schema({
   address_line1: { type: String, required: true },
   address_line2: { type: String },
   CityId: { type: Schema.Types.ObjectId, ref: 'City', require: true },
-});
+};
+
+const product = {
+  productId: { type: Schema.Types.ObjectId, ref: 'Product' },
+  sku: { type: String, required: true },
+  qty: { type: Number, required: true },
+};
+
+// each user can have one ShoppingCart
+export const ShoppingCartSchema = {
+  // options...
+  products: [product],
+};
 
 export const UserSchema = new Schema(
   {
@@ -28,6 +40,7 @@ export const UserSchema = new Schema(
     password: { type: String, required: true, select: false },
     role: { type: String, required: true, enum: ['ADMIN', 'USER'] },
     addresses: [AddressSchema],
+    shoppingCart: { type: ShoppingCartSchema, default: { products: [] } },
   },
   { timestamps: true },
 );

@@ -1,19 +1,35 @@
-import { InjectModel } from '@nestjs/mongoose';
-import { AddProductToShoppingCartDto } from './dtos/add-product-to-shopping-cart.dto';
-import { Body, Controller, Delete, Post, Param, Get } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { ShoppingCartsModule } from './shopping-carts.module';
+import { UpdateProductInShoppingCartDto } from './dtos/update-product-in-shopping-cart.dto';
+import {
+  Body,
+  Controller,
+  Get,
+  Session,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
+import { ShoppingCartsService } from './shopping-carts.service';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('shopping-carts')
 export class ShoppingCartsController {
-  constructor() {}
+  constructor(private shoppingcart: ShoppingCartsService) {}
 
-  @Get()
-  getShoppingCart() {}
+  @Get('')
+  async getMyShoppingCart(@Session() session) {
+    const result = await this.shoppingcart.findShoppingCart(session.userId);
+    return result;
+  }
 
-  @Post(':id')
-  addProductToShoppingCart(@Body() body: AddProductToShoppingCartDto) {}
-
-  @Delete(':sku')
-  removeProductFromShoppingCart(@Param('sku') sku: string) {}
+  @Patch('')
+  @UseGuards(AuthGuard)
+  async addProductToShoppingCart(
+    @Session() session: any,
+    @Body() body: UpdateProductInShoppingCartDto,
+  ) {
+    const result = await this.shoppingcart.addProductToShoppingCart(
+      session.userId,
+      body,
+    );
+    return result;
+  }
 }
