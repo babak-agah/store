@@ -10,9 +10,11 @@ import { ShoppingCartsModule } from './shopping-carts/shopping-carts.module';
 import { VariationsModule } from './variations/variations.module';
 import { UnitsModule } from './units/units.module';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     MongooseModule.forRoot('mongodb://localhost:27017/store'),
     UsersModule,
     ProductsModule,

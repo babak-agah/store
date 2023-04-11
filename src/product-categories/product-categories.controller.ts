@@ -6,7 +6,7 @@ import { CreateProductCategoriesDto } from './dtos/create-product-categoies.dto 
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('product-categories')
-@Controller('product-categories')
+@Controller('api/product-categories')
 export class ProductCategoriesController {
   constructor(private productCategoriesService: ProductCategoriesService) {}
 

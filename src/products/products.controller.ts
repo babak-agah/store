@@ -20,7 +20,7 @@ import { CreateProductItemDto } from './dtos/create-product-item.dto';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('products')
-@Controller('products')
+@Controller('api/products')
 export class ProductsController {
   constructor(private productsService: ProductsService) {}
 

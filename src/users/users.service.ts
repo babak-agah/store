@@ -14,21 +14,13 @@ export class UsersService {
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
   async create(data: CreateUserDto) {
-    const newData = { ...data, role: 'USER' };
+    const newData = { ...data, roles: ['USER'] };
 
     try {
       const user = new this.userModel(newData);
 
       const storedUser = await user.save();
-      return {
-        id: storedUser.id,
-        firstName: storedUser.firstName,
-        lastName: storedUser.lastName,
-        username: storedUser.username,
-        mobile: storedUser.mobile,
-        email: storedUser.email,
-        address: storedUser.addresses,
-      };
+      return storedUser;
     } catch (error) {
       throw new NotFoundException(error);
     }

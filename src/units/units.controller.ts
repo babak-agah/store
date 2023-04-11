@@ -3,7 +3,7 @@ import { UnitsService } from './units.service';
 import { CreateUnitDto } from './dtos/create-unit.dto';
 import { UpdateUnitDto } from './dtos/update-unit.dto';
 
-@Controller('units')
+@Controller('api/units')
 export class UnitsController {
   constructor(private unitsService: UnitsService) {}
 

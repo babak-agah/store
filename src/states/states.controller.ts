@@ -3,7 +3,7 @@ import { StatesService } from './states.service';
 import { CreateStateDto } from './dtos/create-state.dto';
 import { ApiTags } from '@nestjs/swagger';
 @ApiTags('states')
-@Controller('states')
+@Controller('api/states')
 export class StatesController {
   constructor(private StatesServices: StatesService) {}
 

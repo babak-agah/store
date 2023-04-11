@@ -7,6 +7,7 @@ import {
   Get,
   Param,
   Patch,
+  Req,
   Res,
   Session,
   UseGuards,
@@ -16,16 +17,18 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { CurrentUser } from './decorator/current-user.decorator';
 import { User } from './user.entity';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 @ApiTags('users')
-@Controller('users')
+@Controller('api/users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get('me')
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   // @Serialize(UserDto)
-  async GetMe(@Session() session: any, @CurrentUser() user: User) {
-    const u = await this.usersService.findOne({ _id: session.userId });
+  async GetMe(@Req() request, @CurrentUser() user: User) {
+    console.log(request.user);
+    const u = await this.usersService.findOne({ _id: request.user.userId });
     return u;
   }
 

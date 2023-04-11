@@ -2,6 +2,10 @@ import { Document } from 'mongoose';
 
 import { Schema } from 'mongoose';
 
+export type UserRoles = 'ADMIN' | 'USER';
+
+export const USER_ROLES: UserRoles[] = ['ADMIN', 'USER'];
+
 export const AddressSchema = {
   phoneNumber: [String],
   mobileNumber: [String],
@@ -38,7 +42,7 @@ export const UserSchema = new Schema(
     },
     mobile: { type: String, required: true, unique: true },
     password: { type: String, required: true, select: false },
-    role: { type: String, required: true, enum: ['ADMIN', 'USER'] },
+    roles: [{ type: String, required: true, enum: USER_ROLES }],
     addresses: [AddressSchema],
     shoppingCart: { type: ShoppingCartSchema, default: { products: [] } },
   },
@@ -65,7 +69,7 @@ export interface UserInstace {
   mobile: string;
   email?: string;
   password: string;
-  role: 'ADMIN' | 'USER';
+  roles: UserRoles[];
   addresses: [Address];
 }
 

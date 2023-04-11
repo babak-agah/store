@@ -10,7 +10,7 @@ import {
 import { ShoppingCartsService } from './shopping-carts.service';
 import { AuthGuard } from 'src/guards/auth.guard';
 
-@Controller('shopping-carts')
+@Controller('api/shopping-carts')
 export class ShoppingCartsController {
   constructor(private shoppingcart: ShoppingCartsService) {}
 
