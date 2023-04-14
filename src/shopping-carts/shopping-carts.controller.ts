@@ -1,14 +1,6 @@
 import { UpdateProductInShoppingCartDto } from './dtos/update-product-in-shopping-cart.dto';
-import {
-  Body,
-  Controller,
-  Get,
-  Session,
-  Patch,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Session, Patch } from '@nestjs/common';
 import { ShoppingCartsService } from './shopping-carts.service';
-import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('api/shopping-carts')
 export class ShoppingCartsController {
@@ -21,7 +13,6 @@ export class ShoppingCartsController {
   }
 
   @Patch('')
-  @UseGuards(AuthGuard)
   async addProductToShoppingCart(
     @Session() session: any,
     @Body() body: UpdateProductInShoppingCartDto,

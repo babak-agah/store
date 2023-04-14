@@ -24,17 +24,11 @@ export class AuthController {
 
   @ApiTags('auth')
   @Post('signin')
-  async signin(
-    @Res({ passthrough: true }) res,
-    @Body() body: SigninUserDto,
-    @Session() session: SessionType,
-    @Ip() ip: string,
-  ) {
+  async signin(@Body() body: SigninUserDto, @Ip() ip: string) {
     const { user, refreshToken, accessToken } = await this.authService.signin(
       body,
       ip,
     );
-    session.userId = user._id;
     return { user, refreshToken, accessToken };
   }
 }

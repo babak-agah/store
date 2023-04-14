@@ -6,8 +6,13 @@ import {
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as morgan from 'morgan';
-import secureSession from '@fastify/secure-session';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+// import fastyfyMultipart from '@fastify/multipart';
+import multipart from 'fastify-multipart';
+
+const fastifyMultipart = require('fastify-multipart');
+
+const fmp = require('fastify-multipart');
 
 const config = new DocumentBuilder()
   .setTitle('Store')
@@ -22,22 +27,13 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
-  // app.use(cookieSession({ keys: ['askdfjsldkfaj'] }));
+  app.register(fastifyMultipart);
+  // app.register(multipart as any);
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.use(morgan('dev'));
 
-  await app.register(secureSession, {
-    secret: 'averylogphrasebiggerthanthirtytwochars',
-    salt: 'mq9hDxBVDbspDR6n',
-    cookie: {
-      path: '/',
-      // options for setCookie, see https://github.com/fastify/fastify-cookie
-    },
-  });
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, SwaggerModule.createDocument(app, config));
 
   app.enableCors({
     origin: ['http://localhost:3000'],

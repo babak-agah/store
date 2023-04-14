@@ -9,10 +9,8 @@ import {
   Patch,
   Post,
   Session,
-  UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { AuthGuard } from 'src/guards/auth.guard';
 import { FilterQuery } from 'mongoose';
 import { Product } from './product.entity';
 import { SessionType } from 'src/utils/interfaces/session.interface';
@@ -45,7 +43,6 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
   async deleteProductByCreator(
     @Session() session: SessionType,
     @Param('id') id: string,
@@ -59,7 +56,6 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard)
   async updateProduct(
     @Session() session: SessionType,
     @Param('id') id: string,
@@ -78,7 +74,6 @@ export class ProductsController {
 
   @ApiBody({ type: [CreateProductItemDto] })
   @Post(':id')
-  @UseGuards(AuthGuard)
   async addProductItem(
     @Param('id') id: string,
     @Body() data: CreateProductItemDto,
@@ -89,7 +84,6 @@ export class ProductsController {
 
   @ApiBody({ type: [CreateProductItemDto] })
   @Patch('product-items/:id')
-  @UseGuards(AuthGuard)
   async updateProductItem(
     @Param('id') id: string,
     @Body() data: CreateProductItemDto,

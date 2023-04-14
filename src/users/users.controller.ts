@@ -9,14 +9,12 @@ import {
   Patch,
   Req,
   Res,
-  Session,
   UseGuards,
 } from '@nestjs/common';
 
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { CurrentUser } from './decorator/current-user.decorator';
 import { User } from './user.entity';
-import { AuthGuard } from 'src/guards/auth.guard';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 @ApiTags('users')
 @Controller('api/users')
@@ -24,10 +22,9 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get('me')
-  @UseGuards(JwtAuthGuard)
   // @Serialize(UserDto)
+  @UseGuards(JwtAuthGuard)
   async GetMe(@Req() request, @CurrentUser() user: User) {
-    console.log(request.user);
     const u = await this.usersService.findOne({ _id: request.user.userId });
     return u;
   }
@@ -52,7 +49,6 @@ export class UsersController {
     return user;
   }
 
-  @UseGuards(AuthGuard)
   @Patch(`:id`)
   async updateUser(
     @Res() res: FastifyReply,

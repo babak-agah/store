@@ -16,12 +16,6 @@ ProductCategorySchema.method('toJSON', function () {
   return object;
 });
 
-export interface Variation {
-  _id: string;
-  name: string;
-  options: any[];
-}
-
 export interface ProductCategoryInstace {
   _id: string;
   name: string;
