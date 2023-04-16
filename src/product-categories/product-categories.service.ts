@@ -4,10 +4,11 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Model } from 'mongoose';
+
+import { Model, Types } from 'mongoose';
 import { UpdateProductCategoriesDto } from './dtos/update-product-categoies.dto';
 import { ProductCategory } from './product-category.entity';
-import { CreateProductCategoriesDto } from './dtos/create-product-categoies.dto copy';
+import { CreateProductCategoryDto } from './dtos/create-product-category.dto';
 
 @Injectable()
 export class ProductCategoriesService {
@@ -16,19 +17,77 @@ export class ProductCategoriesService {
     private productCategoryModel: Model<ProductCategory>,
   ) {}
 
-  async findOne(id) {
-    const productCategory = await this.productCategoryModel.findById(id);
-    if (productCategory) return productCategory;
-    throw new BadRequestException();
+  async findOne(id: string) {
+    // const productCategory = await this.productCategoryModel.findById(id);
+    const result = await this.productCategoryModel.aggregate([
+      {
+        $match: { _id: new Types.ObjectId(id) },
+      },
+      {
+        $lookup: {
+          from: 'variations',
+          localField: '_id',
+          foreignField: 'productCategoryId',
+          as: 'variation',
+        },
+      },
+      {
+        $lookup: {
+          from: 'variations',
+          localField: 'ancestors',
+          foreignField: 'productCategoryId',
+          as: 'variations',
+        },
+      },
+      {
+        $lookup: {
+          from: 'productcategories',
+          localField: 'parent',
+          foreignField: '_id',
+          as: 'parents',
+        },
+      },
+      {
+        $lookup: {
+          from: 'productcategories',
+          localField: 'ancestors',
+          foreignField: '_id',
+          as: 'ancestors',
+        },
+      },
+      {
+        $project: {
+          name: '$name',
+          parent: {
+            $arrayElemAt: ['$parents', 0.0],
+          },
+          ancestors: '$ancestors',
+          variations: {
+            $concatArrays: ['$variation', '$variations'],
+          },
+        },
+      },
+    ]);
+    console.log(result);
+    if (!result.length) throw new BadRequestException();
+    return result[0];
   }
 
-  async find() {
-    return await this.productCategoryModel.find().exec();
+  // filter: {}, page: number, count: number
+  async find(filter: any) {
+    const query = this.productCategoryModel
+      .find(filter)
+      .populate({ path: 'parent', select: ['name', 'parent', '_id'] })
+      .populate({ path: 'ancestors', select: ['name', 'parent', '_id'] });
+
+    const result = await query;
+    return result;
   }
 
-  async create(data: CreateProductCategoriesDto) {
+  async create(data: CreateProductCategoryDto) {
     try {
       const productCategory = new this.productCategoryModel(data);
+
       await productCategory.save().catch((error) => {
         if (error.code === 11000) {
           throw new BadRequestException('name is duplicated');
@@ -37,7 +96,12 @@ export class ProductCategoriesService {
         throw new InternalServerErrorException();
       });
 
-      return productCategory;
+      await this.updateAncestors();
+
+      const find = await this.find({ _id: productCategory._id });
+      if (!find?.length) throw new InternalServerErrorException();
+
+      return find[0];
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -59,6 +123,38 @@ export class ProductCategoriesService {
     } catch (error) {
       throw new BadRequestException(error);
     }
+  }
+
+  async getItemsWithAncestors() {
+    const result = await this.productCategoryModel.aggregate([
+      {
+        $graphLookup: {
+          from: 'productcategories',
+          startWith: '$parent',
+          connectFromField: 'parent',
+          connectToField: '_id',
+          as: 'ancestors',
+        },
+      },
+      {
+        $project: {
+          ancestors: '$ancestors._id',
+        },
+      },
+    ]);
+
+    return result as ProductCategory[];
+  }
+
+  async updateAncestors() {
+    const result = await this.getItemsWithAncestors();
+    result.forEach(async (item) => {
+      await this.productCategoryModel.updateOne(
+        { _id: item._id },
+        { ancestors: item.ancestors },
+      );
+    });
+    return;
   }
 
   delete() {}

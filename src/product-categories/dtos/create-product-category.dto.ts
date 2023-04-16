@@ -7,7 +7,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-export class CreateProductCategoriesDto {
+export class CreateProductCategoryDto {
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -16,9 +16,13 @@ export class CreateProductCategoriesDto {
   @IsOptional()
   parent: string;
 
-  @IsArray()
+  // @IsArray()
+  // @IsOptional()
+  // @ValidateNested({ each: true })
+  // @Type(() => String)
+  // ancestors: string[];
+
+  @IsString()
   @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => String)
-  ancestors: string[];
+  icon: string;
 }

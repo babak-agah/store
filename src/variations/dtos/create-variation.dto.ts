@@ -1,11 +1,4 @@
-import {
-  IsNotEmpty,
-  IsString,
-  ValidateNested,
-  IsArray,
-  ArrayNotEmpty,
-  IsIn,
-} from 'class-validator';
+import { IsNotEmpty, IsString, IsArray, IsIn } from 'class-validator';
 import { VariationModelType, variationModels } from '../variations.entity';
 import { Type } from 'class-transformer';
 

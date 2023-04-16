@@ -9,6 +9,7 @@ export const ProductCategorySchema = new Schema({
   },
   parent: { type: Schema.Types.ObjectId, ref: 'ProductCategory' },
   ancestors: [{ type: Schema.Types.ObjectId, ref: 'ProductCategory' }],
+  icon: { type: String },
 });
 
 ProductCategorySchema.method('toJSON', function () {
@@ -21,6 +22,7 @@ export interface ProductCategoryInstace {
   name: string;
   parent?: string;
   ancestors: string[];
+  icon: string;
 }
 
 export type ProductCategory = ProductCategoryInstace & Document;

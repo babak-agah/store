@@ -4,10 +4,10 @@ import { UnitSchema } from 'src/units/unit.entity';
 export type VariationModelType = 'color' | 'number' | 'text' | 'select';
 
 export const variationModels: VariationModelType[] = [
-  'color',
-  'number',
-  'text',
-  'select',
+  'color', // { value:"#ddd", name:"red" }
+  'number', // 1
+  'text',  // "some text"
+  'select', // get value from options
 ];
 
 export const VariationSchema = new Schema({

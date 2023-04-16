@@ -25,7 +25,7 @@ export class UploadsController {
           console.log(a);
         });
         //
-        const destination = './uploads/images/';
+        const destination = 'public/images/';
         const name = uuidv4();
         const extname = path.extname(filename);
 

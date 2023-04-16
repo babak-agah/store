@@ -8,7 +8,7 @@ const Configuration = {
     type: String,
     enum: variationModels,
   },
-  unit: String,
+  unit: { type: String },
   values: [Schema.Types.Mixed],
 };
 

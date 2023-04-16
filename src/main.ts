@@ -8,11 +8,11 @@ import { ValidationPipe } from '@nestjs/common';
 import * as morgan from 'morgan';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 // import fastyfyMultipart from '@fastify/multipart';
+
 import multipart from 'fastify-multipart';
+import * as path from 'path';
 
 const fastifyMultipart = require('fastify-multipart');
-
-const fmp = require('fastify-multipart');
 
 const config = new DocumentBuilder()
   .setTitle('Store')
@@ -28,12 +28,15 @@ async function bootstrap() {
   );
 
   app.register(fastifyMultipart);
+
   // app.register(multipart as any);
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.use(morgan('dev'));
 
   SwaggerModule.setup('api', app, SwaggerModule.createDocument(app, config));
+
+  // ServeStaticModule
 
   app.enableCors({
     origin: ['http://localhost:3000'],

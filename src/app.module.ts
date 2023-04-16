@@ -1,3 +1,4 @@
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,11 +13,15 @@ import { UnitsModule } from './units/units.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UploadsModule } from './uploads/uploads.module';
+import * as path from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forRoot('mongodb://localhost:27017/store'),
+    ServeStaticModule.forRoot({
+      rootPath: path.join(__dirname, '..', 'public'),
+    }),
     UsersModule,
     ProductsModule,
     StatesModule,

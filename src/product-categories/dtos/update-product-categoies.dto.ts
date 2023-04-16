@@ -39,4 +39,8 @@ export class UpdateProductCategoriesDto {
   @ValidateNested({ each: true })
   @Type(() => VariationDto)
   variations: VariationDto[];
+
+  @IsString()
+  @IsOptional()
+  icon: string;
 }
