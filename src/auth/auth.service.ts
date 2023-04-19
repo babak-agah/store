@@ -152,7 +152,7 @@ export class AuthService {
       { userId: user._id, roles: user.roles },
       process.env.ACCESS_SECRET,
       {
-        expiresIn: '1h',
+        expiresIn: '1000h',
       },
     );
   }

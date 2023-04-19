@@ -4,6 +4,11 @@ export class ConfigurationDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  variationId: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   name: string;
 
   @ApiProperty()

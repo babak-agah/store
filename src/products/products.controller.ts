@@ -9,6 +9,8 @@ import {
   Patch,
   Post,
   Session,
+  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { FilterQuery } from 'mongoose';
@@ -16,6 +18,9 @@ import { Product } from './product.entity';
 import { SessionType } from 'src/utils/interfaces/session.interface';
 import { CreateProductItemDto } from './dtos/create-product-item.dto';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { Token } from 'src/auth/decorator/token.decorator';
+import { IToken } from 'src/auth/interfaces/Itoken';
 
 @ApiTags('products')
 @Controller('api/products')
@@ -23,11 +28,18 @@ export class ProductsController {
   constructor(private productsService: ProductsService) {}
 
   @ApiBody({ type: [CreatePorductDto] })
-  @Post()
-  async createProduct(@Session() session, @Body() body: CreatePorductDto) {
+  @Post(':id')
+  @UseGuards(JwtAuthGuard)
+  async createProduct(
+    @Param('id') id: string, // categoryId
+    @Body() body: CreatePorductDto,
+    @Token() token: IToken,
+  ) {
+    if (!token.roles.includes('ADMIN')) throw new UnauthorizedException();
     const product = await this.productsService.createProduct(
+      id,
       body,
-      session.userId,
+      token.userId,
     );
     return product;
   }
@@ -73,7 +85,7 @@ export class ProductsController {
   }
 
   @ApiBody({ type: [CreateProductItemDto] })
-  @Post(':id')
+  @Post('product-items/:id')
   async addProductItem(
     @Param('id') id: string,
     @Body() data: CreateProductItemDto,

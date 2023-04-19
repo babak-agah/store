@@ -13,9 +13,10 @@ import {
 } from '@nestjs/common';
 
 import { UpdateUserDto } from './dtos/update-user.dto';
-import { CurrentUser } from './decorator/current-user.decorator';
+import { Token } from '../auth/decorator/token.decorator';
 import { User } from './user.entity';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { IToken } from 'src/auth/interfaces/Itoken';
 @ApiTags('users')
 @Controller('api/users')
 export class UsersController {
@@ -24,7 +25,7 @@ export class UsersController {
   @Get('me')
   // @Serialize(UserDto)
   @UseGuards(JwtAuthGuard)
-  async GetMe(@Req() request, @CurrentUser() user: User) {
+  async GetMe(@Req() request, @Token() token: IToken) {
     const u = await this.usersService.findOne({ _id: request.user.userId });
     return u;
   }

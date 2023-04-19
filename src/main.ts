@@ -31,6 +31,10 @@ async function bootstrap() {
 
   // app.register(multipart as any);
 
+  app.useStaticAssets({
+    root: path.resolve(__dirname + './../public'),
+  });
+
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.use(morgan('dev'));
 

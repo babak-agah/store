@@ -1,5 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { ConfigurationDto } from './configuration.dto';
 
 export class CreatePorductDto {
   @ApiProperty()
@@ -9,16 +18,22 @@ export class CreatePorductDto {
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  categoryId: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   description: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsNumber()
+  @IsOptional()
   price: number;
+
+  @ApiProperty()
+  @IsArray()
+  @Type(() => String)
+  @IsOptional()
+  images: string;
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => ConfigurationDto)
+  configurations: ConfigurationDto[];
 }

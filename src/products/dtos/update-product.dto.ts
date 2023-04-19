@@ -5,6 +5,7 @@ import {
   Length,
   IsOptional,
   ValidateNested,
+  IsArray,
 } from 'class-validator';
 import { ConfigurationDto } from './configuration.dto';
 import { Type } from 'class-transformer';
@@ -25,6 +26,13 @@ export class UpdatePorductDto {
   @IsOptional()
   @IsNumber()
   price?: number;
+
+  @ApiProperty()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => String)
+  @IsOptional()
+  images: string;
 
   @ValidateNested({ each: true })
   @Type(() => ConfigurationDto)

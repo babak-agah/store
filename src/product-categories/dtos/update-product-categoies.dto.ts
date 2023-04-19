@@ -32,6 +32,7 @@ export class UpdateProductCategoriesDto {
 
   @IsString()
   @ValidateIf((object, value) => value !== null)
+  @IsOptional()
   parent!: null | string;
 
   @IsArray()

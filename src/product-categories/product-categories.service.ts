@@ -57,6 +57,7 @@ export class ProductCategoriesService {
       },
       {
         $project: {
+          icon: '$icon',
           name: '$name',
           parent: {
             $arrayElemAt: ['$parents', 0.0],
@@ -77,8 +78,11 @@ export class ProductCategoriesService {
   async find(filter: any) {
     const query = this.productCategoryModel
       .find(filter)
-      .populate({ path: 'parent', select: ['name', 'parent', '_id'] })
-      .populate({ path: 'ancestors', select: ['name', 'parent', '_id'] });
+      .populate({ path: 'parent', select: ['name', 'parent', 'icon', '_id'] })
+      .populate({
+        path: 'ancestors',
+        select: ['name', 'parent', 'icon', '_id'],
+      });
 
     const result = await query;
     return result;
@@ -87,7 +91,6 @@ export class ProductCategoriesService {
   async create(data: CreateProductCategoryDto) {
     try {
       const productCategory = new this.productCategoryModel(data);
-
       await productCategory.save().catch((error) => {
         if (error.code === 11000) {
           throw new BadRequestException('name is duplicated');
@@ -119,7 +122,13 @@ export class ProductCategoriesService {
         { new: true, runValidators: true },
       );
 
-      return result;
+      if (newData.parent !== result.parent) {
+        await this.updateAncestors();
+      }
+
+      const find = await this.findOne(id);
+
+      return find;
     } catch (error) {
       throw new BadRequestException(error);
     }

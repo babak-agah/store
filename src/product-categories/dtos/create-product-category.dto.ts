@@ -1,10 +1,7 @@
-import { Type } from 'class-transformer';
 import {
-  IsArray,
   IsNotEmpty,
   IsOptional,
   IsString,
-  ValidateNested,
 } from 'class-validator';
 
 export class CreateProductCategoryDto {

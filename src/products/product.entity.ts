@@ -1,14 +1,8 @@
-import { variationModels } from './../variations/variations.entity';
 import { Schema } from 'mongoose';
 
 const Configuration = {
   variationId: { type: Schema.Types.ObjectId, ref: 'Variation' },
   name: { type: String, required: true },
-  model: {
-    type: String,
-    enum: variationModels,
-  },
-  unit: { type: String },
   values: [Schema.Types.Mixed],
 };
 
@@ -22,7 +16,7 @@ export const ProductItemSchema = {
     index: 1,
   },
   qtyInStock: { type: Number, required: true },
-  images: [String],
+  images: [{ type: String }],
   price: { type: Number, required: true },
   configurations: [Configuration],
 };
@@ -36,7 +30,7 @@ export const ProductSchema = new Schema(
       required: [true, 'categoryId is required.'],
     },
     description: { type: String },
-    images: String,
+    images: [{ type: String }],
     userId: {
       required: true,
       type: Schema.Types.ObjectId,

@@ -14,7 +14,7 @@ import * as pump from 'pump';
 @Controller('uploads')
 export class UploadsController {
   // @UseGuards(UploadGuard)
-  @Post('upload')
+  @Post('image')
   async uploadFile(@Req() req, @Res() res) {
     const mp = req.multipart(
       (field: any, file: any, filename: any, encoding: any, mimeType: any) => {
