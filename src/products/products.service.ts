@@ -12,6 +12,9 @@ import { CreatePorductDto } from './dtos/create-product.dto';
 import { Projection } from 'src/utils/adapter';
 import { errorHandlers } from 'src/utils/error-handler';
 import { CreateProductItemDto } from './dtos/create-product-item.dto';
+import { PaginationDto } from 'src/dtos/pagination.dto';
+import { SearchQueryDto } from 'src/dtos/search-query.dto';
+import { IPagination } from 'src/interfaces/IPagination';
 
 @Injectable()
 export class ProductsService {
@@ -46,13 +49,17 @@ export class ProductsService {
   }
 
   async getProducts(
-    options: FilterQuery<Product>,
+    query: any,
+    pagination: IPagination,
     projection?: Projection<ProductInstace>,
   ) {
     const products = await this.productModel
-      .find(options, { ...projection })
+      .find(query.filter, { ...projection })
+      .skip(pagination.skip)
+      .limit(pagination.limit)
       .exec();
-    return products;
+    const count = await this.productModel.find(query.filter).count();
+    return { items: products, count };
   }
 
   async deleteProduct(filter: FilterQuery<Product>) {

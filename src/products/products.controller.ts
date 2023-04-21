@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Session,
   UnauthorizedException,
   UseGuards,
@@ -21,6 +22,8 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { Token } from 'src/auth/decorator/token.decorator';
 import { IToken } from 'src/auth/interfaces/Itoken';
+import { SearchQueryDto } from 'src/dtos/search-query.dto';
+import { paginationHandler } from 'src/utils/pagination-handler';
 
 @ApiTags('products')
 @Controller('api/products')
@@ -50,8 +53,16 @@ export class ProductsController {
   }
 
   @Get()
-  async getProducts() {
-    return this.productsService.getProducts({});
+  async getProducts(@Query() query) {
+    const pagination = paginationHandler(query);
+    const filter = query.filter ? JSON.parse(query.filter) : {};
+    const result = await this.productsService.getProducts(filter, pagination);
+    return {
+      items: result.items,
+      total: result.count,
+      limit: pagination.limit,
+      page: pagination.page,
+    };
   }
 
   @Delete(':id')

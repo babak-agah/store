@@ -58,4 +58,10 @@ export class ProductCategoriesController {
     const result = await this.productCategoriesService.update(id, body);
     return result;
   }
+
+  @Get('leaves')
+  async getLeaves() {
+    const result = await this.productCategoriesService.getLeaves();
+    return result;
+  }
 }

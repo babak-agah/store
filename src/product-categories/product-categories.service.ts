@@ -88,6 +88,43 @@ export class ProductCategoriesService {
     return result;
   }
 
+  async getLeaves() {
+    const query = [
+      {
+        $lookup: {
+          from: 'productcategories',
+          localField: '_id',
+          foreignField: 'parent',
+          as: 'references',
+        },
+      },
+      {
+        $match: {
+          references: [],
+        },
+      },
+      {
+        $lookup: {
+          from: 'productcategories',
+          localField: 'parent',
+          foreignField: '_id',
+          as: 'parent',
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          icon: 1,
+          parent: { $first: '$parent' },
+          ancestors: 1,
+        },
+      },
+    ];
+
+    const result = await this.productCategoryModel.aggregate(query);
+    return result;
+  }
+
   async create(data: CreateProductCategoryDto) {
     try {
       const productCategory = new this.productCategoryModel(data);
@@ -134,7 +171,7 @@ export class ProductCategoriesService {
     }
   }
 
-  async getItemsWithAncestors() {
+  async getAncestorsWithParents() {
     const result = await this.productCategoryModel.aggregate([
       {
         $graphLookup: {
@@ -156,7 +193,7 @@ export class ProductCategoriesService {
   }
 
   async updateAncestors() {
-    const result = await this.getItemsWithAncestors();
+    const result = await this.getAncestorsWithParents();
     result.forEach(async (item) => {
       await this.productCategoryModel.updateOne(
         { _id: item._id },

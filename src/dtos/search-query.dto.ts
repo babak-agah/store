@@ -1,12 +1,17 @@
-import { IsNumber, IsObject, IsString } from 'class-validator';
+import {
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { PaginationDto } from './pagination.dto';
 
-export class SearchQueryDto {
+export class SearchQueryDto<F> {
   @IsString()
-  filter: any;
+  @IsOptional()
+  filter: F;
 
-  @IsString()
-  page: String;
-
-  @IsString()
-  limit: String;
+  @IsObject()
+  @ValidateNested()
+  pagination: PaginationDto;
 }
